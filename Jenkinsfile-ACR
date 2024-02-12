@@ -41,7 +41,7 @@ pipeline {
         stage('Upload Image to ACR') {
          steps{   
              script {
-                 docker.withRegistry( "http://${ACR_NAME}.azurecr.io", ${registryCredential} ) {
+                 docker.withRegistry( "http://${ACR_NAME}.azurecr.io", "lili-acr-credentials-id" ) {
                // dockerImage.push()
               sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
                   }
