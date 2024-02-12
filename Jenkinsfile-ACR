@@ -9,7 +9,7 @@ pipeline {
     registyUrl = "liliacr.azurecr.io"
     IMAGE_NAME = "amazon_app"
     IMAGE_TAG = "v1.0.0"
-    registryCredential  = "lili-acr-credentials-id"
+    registryCredential  = "azure-registry-credentials"
     }
     stages { 
         stage('SCM Checkout') {
@@ -41,7 +41,7 @@ pipeline {
         stage('Upload Image to ACR') {
          steps{   
              script {
-                 docker.withRegistry( "http://${ACR_NAME}.azurecr.io", registryCredential ) {
+                 docker.withRegistry( "http://${ACR_NAME}.azurecr.io", ${registryCredential} ) {
                // dockerImage.push()
               sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
                   }
