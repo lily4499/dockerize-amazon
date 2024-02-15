@@ -43,8 +43,9 @@ pipeline {
         stage('Upload Image to ACR') {
          steps{   
              script {
-                  withCredentials([usernamePassword(credentialsId: 'lili-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
-                        sh "az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD --tenant $AZURE_TENANT_ID"
+               withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
+              //    withCredentials([usernamePassword(credentialsId: 'lili-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
+               //         sh "az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD --tenant $AZURE_TENANT_ID"
               //   docker.withRegistry( "http://${ACR_NAME}.azurecr.io",  AZURE_CREDENTIALS ) {
                // dockerImage.push()
              		 sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
@@ -55,11 +56,11 @@ pipeline {
 
    //  Trigger seciond job to update deployment file 
 
-	stage('Trigger ManifestUpdate') {
-             steps{
-                build job: 'update-amazon-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]    
-	   }
-	}
+//	stage('Trigger ManifestUpdate') {
+   //          steps{
+  //              build job: 'update-amazon-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]    
+//	   }
+//	}
 		
     }
 }
