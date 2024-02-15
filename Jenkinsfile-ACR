@@ -9,8 +9,6 @@ pipeline {
     ACR_LOGIN_SERVER = "liliacr.azurecr.io"
     IMAGE_NAME = "amazon_app"
     IMAGE_TAG = "v1.0.0"
-    AZURE_SERVICE_PRINCIPAL_ID = credentials('lil-sp-client-id')
-    AZURE_SERVICE_PRINCIPAL_PASSWORD = credentials('lil-sp-client-secret-id')
     AZURE_TENANT_ID = '98932122-35ff-47e5-a539-0942b55eb83c'
     }
     stages { 
@@ -44,10 +42,9 @@ pipeline {
          steps{   
              script {
                withCredentials([usernamePassword(credentialsId: 'lilip-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
-              //    withCredentials([usernamePassword(credentialsId: 'lili-acr-credentials-id', usernameVariable: 'SERVICE_PRINCIPAL_ID', passwordVariable: 'SERVICE_PRINCIPAL_PASSWORD')]) {
-               //         sh "az login --service-principal -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD --tenant $AZURE_TENANT_ID"
               //   docker.withRegistry( "http://${ACR_NAME}.azurecr.io",  AZURE_CREDENTIALS ) {
                // dockerImage.push()
+			 sh "docker login ${ACR_LOGIN_SERVER} -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD"
              		 sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
                   }
               }
