@@ -8,8 +8,8 @@ pipeline {
     ACR_NAME = "liliacr"
     ACR_LOGIN_SERVER = "liliacr.azurecr.io"
     IMAGE_NAME = "amazon_app"
-    IMAGE_TAG = "v1.0.0"
-    AZURE_TENANT_ID = '98932122-35ff-47e5-a539-0942b55eb83c'
+  //  IMAGE_TAG = "v1.0.0"
+   // AZURE_TENANT_ID = '98932122-35ff-47e5-a539-0942b55eb83c'
     }
     stages { 
         stage('SCM Checkout') {
@@ -33,10 +33,17 @@ pipeline {
         steps {
                 script {
                     //dockerImage = docker.build registryUrl
-                 def dockerImage = docker.build("${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}", '.') 
+                 def dockerImage = docker.build("${ACR_NAME}.azurecr.io/${IMAGE_NAME}:$BUILD_NUMBER", '.') 
                 }
             }
-       } 
+       }
+
+	stage('Trivy Scan (Aqua)') {
+            steps {
+                sh 'trivy image ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:$BUILD_NUMBER'
+            }
+       }
+
     // Uploading Docker images into ACR
         stage('Upload Image to ACR') {
          steps{   
@@ -45,7 +52,7 @@ pipeline {
               //   docker.withRegistry( "http://${ACR_NAME}.azurecr.io",  AZURE_CREDENTIALS ) {
                // dockerImage.push()
 			 sh "docker login ${ACR_LOGIN_SERVER} -u $SERVICE_PRINCIPAL_ID -p $SERVICE_PRINCIPAL_PASSWORD"
-             		 sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
+             		 sh " docker push ${ACR_NAME}.azurecr.io/${IMAGE_NAME}:$BUILD_NUMBER"
                   }
               }
          }
