@@ -53,11 +53,11 @@ pipeline {
 
    //  Trigger seciond job to update deployment file 
 
-//	stage('Trigger ManifestUpdate') {
-   //          steps{
-  //              build job: 'update-amazon-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]    
-//	   }
-//	}
+	stage('Trigger ManifestUpdate') {
+             steps{
+                build job: 'update-amazon-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]    
+	   }
+	}
 		
     }
 }
