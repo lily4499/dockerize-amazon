@@ -6,9 +6,9 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'  // Replace with your AWS region
-        ECR_REGISTRY = 'lili_ecr_repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
+        ECR_REGISTRY = 'lili-ecr-repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
         URL_REGISTRY = '637423529262.dkr.ecr.us-east-1.amazonaws.com'
-        IMAGE_NAME = 'app_amazon'          // Replace with your image name
+     //   IMAGE_NAME = 'app_amazon'          // Replace with your image name
       
     }
     stages{
@@ -39,13 +39,13 @@ pipeline {
             steps {
                 script {
                     // build image
-                    docker.build("${URL_REGISTRY}/${ECR_REGISTRY}/{${IMAGE_NAME}:$BUILD_NUMBER")
+                    docker.build("${URL_REGISTRY}/${ECR_REGISTRY}:$BUILD_NUMBER")
                 }
             }
         }
         stage('Trivy Scan (Aqua)') {
             steps {
-                sh 'trivy image --format template --output trivy_report.html ${URL_REGISTRY}/${ECR_REGISTRY}/{${IMAGE_NAME}:$BUILD_NUMBER'
+                sh 'trivy image --format template --output trivy_report.html ${URL_REGISTRY}/${ECR_REGISTRY}:$BUILD_NUMBER'
             }
        }
         stage('Push Docker Image') {
@@ -55,7 +55,7 @@ pipeline {
                         def login = sh(script: "aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
                         sh "echo ${login} | docker login --username AWS --password-stdin ${URL_REGISTRY}"
                 
-                        def customImage = docker.build("${URL_REGISTRY}/${ECR_REGISTRY}/{${IMAGE_NAME}:$BUILD_NUMBER")
+                        def customImage = docker.build("${URL_REGISTRY}/${ECR_REGISTRY}:$BUILD_NUMBER")
                         customImage.push()
                     }
                 }
