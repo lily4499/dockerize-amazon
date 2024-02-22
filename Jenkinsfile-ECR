@@ -51,15 +51,21 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script{
-                    withCredentials([usernamePassword(credentialsId: 'lilp-aws-credentials-id', usernameVariable: 'Access_key_ID', passwordVariable: 'Secret_Access_key')]) {
-                        sh "docker login ${URL_REGISTRY} -u $Access_key_ID -p $Secret_Access_key"
+               //     withCredentials([usernamePassword(credentialsId: 'lilp-aws-credentials-id', usernameVariable: 'Access_key_ID', passwordVariable: 'Secret_Access_key')]) {
+                  //      sh "docker login ${URL_REGISTRY} -u $Access_key_ID -p $Secret_Access_key"
              //       aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $URL_REGISTRY
                     //https://<AwsAccountNumber>.dkr.ecr.<region>.amazonaws.com/rekeyole-app', 'ecr:<region>:<credentialsId>
               //      docker.withRegistry('https://${URL_REGISTRY}/${IMAGE_NAME}', 'ecr:$AWS_REGION:$AWS_CREDENTIALS_ID') {
                     // build image
-                        def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
+                   //     def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
                     // push image
+                  //      myImage.push()
+                    docker.withRegistry("${URL_REGISTRY}", "${AWS_CREDENTIALS_ID}") {
+                        // build image
+                        def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}")
+                        // push image
                         myImage.push()
+                //    }
                     }
                 }
             }
