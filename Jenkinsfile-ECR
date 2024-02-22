@@ -38,22 +38,22 @@ pipeline {
             steps {
                 script {
                     // build image
-                    docker.build("${URL_REGISTRY}/${IMAGR_NAME}:$BUILD_NUMBER")
+                    docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
                 }
             }
         }
         stage('Trivy Scan (Aqua)') {
             steps {
-                sh 'trivy image --format template --output trivy_report.html ${URL_REGISTRY}/${IMAGR_NAME}:$BUILD_NUMBER'
+                sh 'trivy image --format template --output trivy_report.html ${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER'
             }
        }
         stage('Push to ECR') {
             steps {
                 script{
                     //https://<AwsAccountNumber>.dkr.ecr.<region>.amazonaws.com/rekeyole-app', 'ecr:<region>:<credentialsId>
-                    docker.withRegistry('https://${URL_REGISTRY}/${IMAGR_NAME}', 'ecr:$AWS_REGION:$ECR_REGISTRY') {
+                    docker.withRegistry('https://${URL_REGISTRY}/${IMAGE_NAME}', 'ecr:$AWS_REGION:$ECR_REGISTRY') {
                     // build image
-                    def myImage = docker.build("${URL_REGISTRY}/${IMAGR_NAME}:$BUILD_NUMBER")
+                    def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
                     // push image
                     myImage.push()
                     }
