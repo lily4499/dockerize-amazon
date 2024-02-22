@@ -9,6 +9,7 @@ pipeline {
         ECR_REGISTRY = 'my-ecr-repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
         URL_REGISTRY = '637423529262.dkr.ecr.us-east-1.amazonaws.com'
         IMAGE_NAME = 'app_amazon'          // Replace with your image name
+        AWS_CREDENTIALS_ID = 'lilp-aws-credentials-id'
     }
     stages{
         // NPM dependencies
@@ -50,8 +51,10 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script{
+               //     withCredentials([usernamePassword(credentialsId: 'lilp-aws-credentials-id', usernameVariable: 'Access_key_ID', passwordVariable: 'Secret_Access_key')]) {
+                    
                     //https://<AwsAccountNumber>.dkr.ecr.<region>.amazonaws.com/rekeyole-app', 'ecr:<region>:<credentialsId>
-                    docker.withRegistry('https://${URL_REGISTRY}/${IMAGE_NAME}', 'ecr:$AWS_REGION:$ECR_REGISTRY') {
+                    docker.withRegistry('https://${URL_REGISTRY}/${IMAGE_NAME}', 'ecr:$AWS_REGION:$AWS_CREDENTIALS_ID') {
                     // build image
                     def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
                     // push image
