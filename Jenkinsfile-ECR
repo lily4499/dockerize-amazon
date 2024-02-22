@@ -9,7 +9,7 @@ pipeline {
         ECR_REGISTRY = 'my-ecr-repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
         URL_REGISTRY = '637423529262.dkr.ecr.us-east-1.amazonaws.com'
         IMAGE_NAME = 'app_amazon'          // Replace with your image name
-        AWS_CREDENTIALS_ID = 'lil-ecr'
+      //  AWS_CREDENTIALS_ID = 'lil-ecr'
     }
     stages{
         // NPM dependencies
@@ -51,21 +51,12 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script{
-               //     withCredentials([usernamePassword(credentialsId: 'lilp-aws-credentials-id', usernameVariable: 'Access_key_ID', passwordVariable: 'Secret_Access_key')]) {
-                  //      sh "docker login ${URL_REGISTRY} -u $Access_key_ID -p $Secret_Access_key"
-             //       aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $URL_REGISTRY
-                    //https://<AwsAccountNumber>.dkr.ecr.<region>.amazonaws.com/rekeyole-app', 'ecr:<region>:<credentialsId>
-              //      docker.withRegistry('https://${URL_REGISTRY}/${IMAGE_NAME}', 'ecr:$AWS_REGION:$AWS_CREDENTIALS_ID') {
-                    // build image
-                   //     def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
-                    // push image
-                  //      myImage.push()
-                    docker.withRegistry("${URL_REGISTRY}", "${AWS_CREDENTIALS_ID}") {
-                        // build image
-                        def myImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}")
-                        // push image
-                        myImage.push()
-                //    }
+                   withCredentials([usernamePassword(credentialsId: 'lil-ecr-credentials-id', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                       def login = sh(script: "aws ecr get-login-password --region ${AWS_DEFAULT_REGION}", returnStdout: true).trim()
+                       sh "echo ${login} | docker login --username AWS --password-stdin ${URL_REGISTRY}"
+                
+                       def customImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
+                       customImage.push()
                     }
                 }
             }
