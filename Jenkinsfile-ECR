@@ -6,7 +6,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'  // Replace with your AWS region
-        ECR_REGISTRY = 'my-ecr-repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
+        ECR_REGISTRY = 'my-repository'      // Replace with your ECR registry URL (e.g., <account_id>.dkr.ecr.<region>.amazonaws.com)
         URL_REGISTRY = '637423529262.dkr.ecr.us-east-1.amazonaws.com'
         IMAGE_NAME = 'app_amazon'          // Replace with your image name
       //  AWS_CREDENTIALS_ID = 'lil-ecr'
