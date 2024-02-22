@@ -55,7 +55,7 @@ pipeline {
                     withCredentials([[
                         $class: 'AmazonWebServicesCredentialsBinding',
                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        credentialsId: 'lilb-ecr-credentials-id',
+                        credentialsId: 'lil-ecr',
                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                         docker.withRegistry("${URL_REGISTRY}", "ecr:${AWS_REGION}") {
