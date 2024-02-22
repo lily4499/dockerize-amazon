@@ -48,15 +48,20 @@ pipeline {
                 sh 'trivy image --format template --output trivy_report.html ${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER'
             }
        }
-        stage('Push to ECR') {
+       stage('Push Docker Image to ECR') {
             steps {
-                script{
-                   withCredentials([usernamePassword(credentialsId: 'lil-ecr-credentials-id', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                       def login = sh(script: "aws ecr get-login-password --region ${AWS_DEFAULT_REGION}", returnStdout: true).trim()
-                       sh "echo ${login} | docker login --username AWS --password-stdin ${URL_REGISTRY}"
-                
-                       def customImage = docker.build("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
-                       customImage.push()
+                script {
+                    // Authenticate Docker with ECR
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        credentialsId: 'lilb-ecr-credentials-id',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        docker.withRegistry("${URL_REGISTRY}", "ecr:${AWS_REGION}") {
+                            // Push Docker image to ECR
+                            docker.image("${URL_REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER").push()
+                        }
                     }
                 }
             }
