@@ -54,18 +54,36 @@ pipeline {
         
         stage('Trigger ManifestUpdate') {
             steps {
-                build job: 'amazon-DOKERHUB-manifest', parameters: [string(name: 'IMAGETAG', value: env.BUILD_NUMBER)]
+                build job: 'amazon-dockerhub-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]
             } 
         }
     }
 
     post {
+        success {
+            // This block will execute if the build is successful
+            script {
+                currentBuild.result = 'SUCCESS' // Set the build result to success
+                echo 'Congratulations! The build was successful.'
+                // You can also send an email or perform other actions here
+            }
+        }
+        
+        failure {
+            // This block will execute if the build fails
+            script {
+                currentBuild.result = 'FAILURE' // Set the build result to failure
+                echo 'The build has failed.'
+                // You can also send an email or perform other actions here
+            }
+        }
+        
         always {
-            emailext subject: "Build Notification - ${currentBuild.fullDisplayName}",
-                      body: "Build ${currentBuild.fullDisplayName} finished with result: ${currentBuild.currentResult}",
-                      to: "konissil@gmail.com",
-                      attachLog: true
+            // This block will always execute regardless of the build result
+            echo 'End of Jenkins pipeline execution.'
+            // You can perform cleanup or other actions here
         }
     }
+    
 }
 
