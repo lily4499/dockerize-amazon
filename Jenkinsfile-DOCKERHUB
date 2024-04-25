@@ -54,7 +54,7 @@ pipeline {
         
         stage('Trigger ManifestUpdate') {
             steps {
-                build job: 'amazon-dockerhub-manifest', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]
+                build job: 'update_manifest_amazon_image', parameters: [string(name: 'IMAGE_TAG', value: env.BUILD_NUMBER)]
             } 
         }
     }
